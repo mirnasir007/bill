@@ -105,15 +105,12 @@
 </head>
 <body class="p-4">
 
-    <!-- MAIN NAVIGATION -->
     <div class="w-full px-4 mb-4 bg-white rounded-lg shadow p-2 flex no-print">
         <div id="tab-print" class="tab-btn active" onclick="switchTab('print')">Print Bill</div>
         <div id="tab-history" class="tab-btn" onclick="switchTab('history')">History</div>
     </div>
 
-    <!-- TAB 1: PRINT BILL -->
     <div id="view-print" class="w-full px-4 flex flex-col md:flex-row gap-8">
-        <!-- FORM -->
         <div class="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-md no-print">
             <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">New Bill</h2>
             <div class="space-y-3 mb-6">
@@ -160,7 +157,6 @@
             </button>
         </div>
 
-        <!-- RECEIPT PREVIEW -->
         <div class="w-full md:w-1/2 flex justify-center items-start bg-gray-300 p-4 rounded-lg min-h-[500px]">
             <div id="receipt-area" class="receipt-container receipt-font">
                 
@@ -212,7 +208,6 @@
         </div>
     </div>
 
-    <!-- TAB 2: HISTORY -->
     <div id="view-history" class="w-full px-4 bg-white p-6 rounded-lg shadow-md hidden">
         <div class="flex flex-col md:flex-row justify-between items-center mb-4 border-b pb-2 gap-4">
             <h2 class="text-xl font-bold text-gray-800">Sales History</h2>
@@ -417,9 +412,11 @@
                 });
             }
 
-            document.getElementById('out_subtotal').innerText = "-"; 
-            document.getElementById('out_shipping').innerText = "-"; 
-            document.getElementById('out_grandtotal').innerText = data.total + ".00";
+            // --- আপনার অনুরোধ অনুযায়ী সংশোধিত অংশ ---
+            document.getElementById('out_subtotal').innerText = "0.00"; 
+            document.getElementById('out_shipping').innerText = "0.00"; 
+            document.getElementById('out_grandtotal').innerText = Number(data.total).toFixed(2);
+            // --- সংশোধিত অংশ শেষ ---
 
             document.body.classList.add('printing-history');
             setTimeout(() => {
