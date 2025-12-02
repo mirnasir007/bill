@@ -10,126 +10,174 @@
         /* General Styles */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
 
-        /* --- RECEIPT DESIGN --- */
-        .receipt-font { 
-            font-family: 'Arial Narrow', Arial, sans-serif; 
-            font-size: 11px; 
-            line-height: 1.3;
-            color: black;
-        }
-        
-        /* Default screen view width */
-        .receipt-container {
-            width: 72mm; 
-            margin: 0 auto; 
-            background: white; 
-            padding: 2mm 1mm; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-            overflow: hidden;
-            box-sizing: border-box; /* Ensures padding doesn't increase width */
+        /* --- SCREEN PREVIEW STYLES --- */
+        .receipt-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            font-size: 14px;
         }
 
-        .shop-header { text-align: center; margin-bottom: 5px; }
-        .shop-name { font-weight: bold; font-size: 14px; text-transform: uppercase; }
-        .shop-details { font-size: 10px; color: #000; }
+        /* --- PRINT STYLES --- */
+        #print-only-area { display: none; }
 
-        .info-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
-
-        .customer-section { font-size: 10px; margin-top: 5px; margin-bottom: 5px; line-height: 1.4; }
-        .customer-label { font-weight: bold; }
-
-        table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 5px; }
-        .table-header td { font-weight: bold; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 3px 0; text-transform: capitalize; }
-        .item-row td { padding: 2px 0; vertical-align: top; }
-
-        .totals-section { margin-top: 5px; border-top: 1px solid #000; padding-top: 5px; font-size: 11px; text-align: right; }
-        .footer-msg { text-align: center; margin-top: 10px; font-size: 9px; border-top: 1px solid #ccc; padding-top: 5px; }
-
-        /* --- PRINT STYLES FIXED --- */
         @media print {
-            body { 
-                background: white; 
-                margin: 0 !important; 
-                padding: 0 !important; 
-            }
-            .no-print { display: none !important; }
-            
-            body.printing-history #view-history { display: none !important; }
-            body.printing-history #view-print { display: block !important; visibility: visible !important; }
-            
-            /* Print View Layout Fixes */
-            #view-print {
-                display: block !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            #view-print > div:first-child { display: none !important; } /* Hide Form */
-            
-            /* Target the Receipt Wrapper */
-            #view-print > div:last-child { 
-                display: block !important; 
-                width: 100% !important; 
-                padding: 0 !important; 
-                margin: 0 !important; 
-                background: transparent !important;
-                min-height: auto !important;
-            }
-            
-            /* Receipt Container: Add safe padding to prevent cutting */
-            .receipt-container { 
-                width: 100% !important; 
-                max-width: 100% !important; 
-                box-shadow: none; 
-                margin: 0 !important; 
-                /* Added padding-right specifically to save the 'Amount' column */
-                padding: 0 4mm 0 2mm !important; 
-                border: none; 
-                box-sizing: border-box !important;
-            }
-
-            /* Ensure table fits within the safe area */
-            table { width: 100% !important; }
-
+            /* Reset Page Margins for POS */
             @page { margin: 0; size: auto; }
-            * { -webkit-print-color-adjust: exact; }
-        }
+            body { background: white; margin: 0; padding: 0; }
+            
+            .no-print { display: none !important; }
+            #view-print, #view-history, .tab-btn { display: none !important; }
+            
+            /* Main Print Container */
+            #print-only-area { 
+                display: block !important; 
+                width: 100%;
+                /* Standard POS Padding */
+                padding: 5mm 3mm; 
+                box-sizing: border-box;
+                font-family: Arial, sans-serif;
+                color: black;
+                font-size: 12px;
+            }
 
-        /* Tabs & UI */
-        .tab-btn { cursor: pointer; padding: 10px 20px; font-weight: bold; border-bottom: 3px solid transparent; }
-        .tab-btn.active { border-bottom-color: #2563eb; color: #2563eb; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            /* Header Section */
+            .print-header { text-align: center; margin-bottom: 15px; }
+            .print-shop-name { font-weight: 900; font-size: 17px; text-transform: uppercase; margin-bottom: 3px; }
+            .print-address { font-size: 11px; margin-bottom: 2px; }
+            .print-contact { font-size: 12px; font-weight: bold; }
+
+            /* Customer & Invoice Info Table */
+            .info-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+            }
+            .info-table td {
+                padding: 2px 0;
+                vertical-align: top;
+                font-size: 12px;
+            }
+            /* Column 1: Labels */
+            .info-label-col {
+                width: 130px; 
+                font-weight: 900;
+                white-space: nowrap;
+            }
+            /* Column 2: Values */
+            .info-value-col {
+                text-align: left;
+                padding-left: 5px;
+            }
+
+            /* Product Table */
+            .print-table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                margin-top: 5px; 
+                font-size: 12px;
+                border-top: 2px solid black; 
+            }
+            .print-table th { 
+                border-bottom: 2px solid black; 
+                text-align: left; 
+                padding: 5px 0;
+                font-weight: 900;
+            }
+            .print-table td { 
+                padding: 4px 0; 
+                vertical-align: top;
+            }
+            .text-right { text-align: right; }
+            .text-center { text-align: center; }
+
+            /* Totals Section */
+            .print-totals { 
+                margin-top: 5px; 
+                border-top: 1px solid #000; 
+                padding-top: 5px;
+                font-size: 12px;
+            }
+            .total-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+            
+            /* Grand Total Style */
+            .grand-total {
+                border-top: 2px solid black;
+                margin-top: 5px;
+                padding-top: 5px;
+                font-weight: 900;
+                font-size: 14px;
+            }
+
+            /* Footer */
+            .print-footer { 
+                text-align: center; 
+                font-size: 11px; 
+                margin-top: 25px; 
+                border-top: 1px solid #ddd;
+                padding-top: 10px;
+            }
+        }
     </style>
 </head>
 <body class="p-4">
 
+    <!-- TAB NAVIGATION -->
     <div class="w-full px-4 mb-4 bg-white rounded-lg shadow p-2 flex no-print">
-        <div id="tab-print" class="tab-btn active" onclick="switchTab('print')">Print Bill</div>
-        <div id="tab-history" class="tab-btn" onclick="switchTab('history')">History</div>
+        <div id="tab-print" class="tab-btn active text-blue-600 border-b-2 border-blue-600 font-bold px-4 py-2" onclick="switchTab('print')">Print Bill</div>
+        <div id="tab-history" class="tab-btn text-gray-500 px-4 py-2 font-bold cursor-pointer hover:text-blue-500" onclick="switchTab('history')">History</div>
     </div>
 
+    <!-- MAIN INTERFACE -->
     <div id="view-print" class="w-full px-4 flex flex-col md:flex-row gap-8">
+        <!-- Input Form -->
         <div class="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-md no-print">
             <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">New Bill</h2>
+            
             <div class="space-y-3 mb-6">
+                <!-- Invoice & Date -->
+                <div class="flex gap-2">
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold uppercase text-gray-600">Invoice No (Optional)</label>
+                        <!-- Set as Text to preserve leading zeros -->
+                        <input type="text" id="in_invoice_custom" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-yellow-50" placeholder="Auto" oninput="updatePreview()">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="block text-xs font-bold uppercase text-gray-600">Date</label>
+                        <input type="text" disabled id="display_date" class="w-full border p-2 rounded bg-gray-100 text-gray-500 font-bold">
+                    </div>
+                </div>
+
+                <!-- Phone Search -->
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-600">Phone Number</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="in_phone" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="017xxxxxxxx" 
+                               oninput="validatePhone()" onkeydown="if(event.key === 'Enter') checkCustomer()">
+                        <button id="btn-search" onclick="checkCustomer()" class="bg-blue-600 text-white px-4 rounded hover:bg-blue-700 font-bold min-w-[50px] flex justify-center items-center">
+                            <svg id="icon-search" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <div id="icon-loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin hidden"></div>
+                        </button>
+                    </div>
+                    <p id="phone-error" class="text-red-500 text-xs mt-1 hidden">Number must be 11 digits.</p>
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Customer Name</label>
                     <input type="text" id="in_name" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter Name" oninput="updatePreview()">
                 </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-600">Phone Number (11 Digits)</label>
-                    <input type="number" id="in_phone" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="017xxxxxxxx" 
-                           oninput="if(this.value.length > 11) this.value = this.value.slice(0, 11); validatePhone()">
-                    <p id="phone-error" class="text-red-500 text-xs mt-1 hidden">Number must be exactly 11 digits.</p>
-                </div>
+                
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Address</label>
                     <textarea id="in_address" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="Enter Address" oninput="updatePreview()"></textarea>
                 </div>
             </div>
 
+            <!-- Product Inputs -->
             <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-bold text-gray-700">Products</h3>
@@ -138,6 +186,7 @@
                 <div id="product-inputs" class="space-y-2"></div>
             </div>
 
+            <!-- Totals -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Shipping (Tk)</label>
@@ -151,68 +200,100 @@
                 </div>
             </div>
 
-            <button id="btn-print" onclick="processAndPrint()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-4 rounded-lg shadow-lg flex justify-center items-center gap-2 text-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+            <button id="btn-print" onclick="processAndPrint()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-4 rounded-lg shadow-lg flex justify-center items-center gap-2 text-lg transition transform hover:scale-[1.02]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                 PRINT & SAVE
             </button>
         </div>
 
-        <div class="w-full md:w-1/2 flex justify-center items-start bg-gray-300 p-4 rounded-lg min-h-[500px]">
-            <div id="receipt-area" class="receipt-container receipt-font">
-                
-                <div class="shop-header">
-                    <div class="shop-name">PFF PREMIUM (ZS Trading)</div>
-                    <div class="shop-details">#5/A, Satmasjid Road Dhanmondi, Dhaka</div>
-                    <div class="shop-details">Mobile: 01772396719</div>
+        <!-- Receipt Preview (SCREEN ONLY) -->
+        <div class="w-full md:w-1/2 flex justify-center items-start bg-gray-300 p-4 rounded-lg min-h-[500px] no-print">
+            <div class="receipt-card">
+                <div class="text-center font-bold text-lg mb-2 text-gray-700">PREVIEW</div>
+                <div class="border-b mb-4"></div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>Invoice:</span> <span id="prev_invoice" class="font-bold"></span></div>
+                    <div class="flex justify-between text-sm"><span>Customer:</span> <span id="prev_name"></span></div>
+                    <div class="flex justify-between text-sm pt-2 border-t"><span>Total:</span> <span id="prev_total" class="font-bold text-lg">0</span></div>
                 </div>
-
-                <div class="info-row" style="margin-top: 8px;">
-                    <span>Date: <span id="out_date_only"></span> <span id="out_time_only"></span></span>
-                </div>
-                <div class="info-row">
-                    <span>Sale Receipt: <span id="out_invoice"></span></span>
-                </div>
-
-                <div class="customer-section">
-                    <div><span class="customer-label">Customer Name:</span> <span id="out_name">Walk-in</span></div>
-                    <div><span class="customer-label">Mobile:</span> <span id="out_phone"></span></div>
-                    <div><span class="customer-label">Customer Address:</span> <span id="out_address">Dhaka</span></div>
-                </div>
-
-                <table class="mb-2">
-                    <thead>
-                        <tr class="table-header">
-                            <td class="text-left" style="width: 45%;">Description</td>
-                            <td class="text-center" style="width: 15%;">Quantity</td>
-                            <td class="text-right" style="width: 20%;">Price</td>
-                            <td class="text-right" style="width: 20%;">Amount</td>
-                        </tr>
-                    </thead>
-                    <tbody id="receipt-items"></tbody>
-                </table>
-
-                <div class="totals-section">
-                    <div class="flex justify-between mb-1"><span>Sub Total</span><span><span id="out_subtotal">0</span>.00</span></div>
-                    <div class="flex justify-between mb-1"><span>Delivery Charges</span><span><span id="out_shipping">0</span>.00</span></div>
-                    
-                    <div class="flex justify-between font-bold" style="border-top: 1px solid #000; margin-top: 2px; padding-top: 2px; font-size: 12px;">
-                        <span>Total Due</span><span><span id="out_grandtotal">0</span>.00</span>
-                    </div>
-                </div>
-
-                <div class="footer-msg">
-                    We dont have any exchange or return policy.<br>
-                    please check while receiving.<br><br>
+                <div class="mt-8 text-xs text-center text-gray-400 border-2 border-dashed p-4 rounded bg-gray-50">
+                    <p>Click "Print & Save" to see the full official invoice.</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- PRINT LAYOUT (Optimized for POS & A4) -->
+    <div id="print-only-area">
+        <div class="print-header">
+            <div class="print-shop-name">PFF PREMIUM (ZS TRADING)</div>
+            <div class="print-address">#5/A, Satmasjid Road Dhanmondi, Dhaka</div>
+            <div class="print-contact">Mobile: 01772396719</div>
+        </div>
+
+        <!-- Layout using TABLE to fix alignment issues -->
+        <table class="info-table">
+            <tr>
+                <td class="info-label-col">Date:</td>
+                <td class="info-value-col"><span id="print_date"></span></td>
+            </tr>
+            <tr>
+                <td class="info-label-col">Invoice NO:</td>
+                <td class="info-value-col"><span id="print_invoice"></span></td>
+            </tr>
+            <tr>
+                <td class="info-label-col">Customer Name:</td>
+                <td class="info-value-col"><span id="print_name"></span></td>
+            </tr>
+            <tr>
+                <td class="info-label-col">Mobile:</td>
+                <td class="info-value-col"><span id="print_phone"></span></td>
+            </tr>
+            <tr>
+                <td class="info-label-col">Customer Address:</td>
+                <td class="info-value-col"><span id="print_address"></span></td>
+            </tr>
+        </table>
+
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">Description</th>
+                    <th class="text-center" style="width: 15%;">Quantity</th>
+                    <th class="text-right" style="width: 20%;">Price</th>
+                    <th class="text-right" style="width: 25%;">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="print-items-body"></tbody>
+        </table>
+
+        <div class="print-totals">
+            <div class="total-row">
+                <span>Sub Total</span>
+                <span><span id="print_subtotal">0.00</span></span>
+            </div>
+            <div class="total-row">
+                <span>Delivery Charges</span>
+                <span><span id="print_shipping">0.00</span></span>
+            </div>
+            <div class="total-row grand-total">
+                <span>Total Due</span>
+                <span><span id="print_grandtotal">0.00</span></span>
+            </div>
+        </div>
+
+        <div class="print-footer">
+            We dont have any exchange or return policy.<br>
+            please check while receiving.
+        </div>
+    </div>
+
+    <!-- HISTORY VIEW -->
     <div id="view-history" class="w-full px-4 bg-white p-6 rounded-lg shadow-md hidden">
         <div class="flex flex-col md:flex-row justify-between items-center mb-4 border-b pb-2 gap-4">
             <h2 class="text-xl font-bold text-gray-800">Sales History</h2>
             <div class="relative w-full md:w-1/3">
-                <input type="text" id="search-history" onkeyup="filterHistory()" class="block w-full p-2 text-sm border rounded" placeholder="Search Invoice, Name or Phone...">
+                <input type="text" id="search-history" onkeyup="filterHistory()" class="block w-full p-2 text-sm border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Search Invoice, Name or Phone...">
             </div>
         </div>
         <div class="overflow-x-auto">
@@ -223,17 +304,43 @@
                         <th class="px-2 py-3">Invoice</th>
                         <th class="px-2 py-3">Customer</th>
                         <th class="px-2 py-3">Phone</th>
-                        <th class="px-2 py-3 w-1/5 break-words">Address</th>
-                        <th class="px-2 py-3 w-1/5 break-words">Items</th>
-                        <th class="px-2 py-3 text-center">Total Qty</th>
+                        <th class="px-2 py-3 min-w-[200px] whitespace-normal">Address</th>
+                        <th class="px-2 py-3">Items</th>
                         <th class="px-2 py-3 text-right">Total</th>
                         <th class="px-2 py-3 text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody id="history-table-body"></tbody>
             </table>
-            <div id="loading-msg" class="text-center py-8 hidden">Loading...</div>
-            <div id="empty-history" class="text-center py-8 hidden">No records found.</div>
+            <div id="loading-msg" class="text-center py-8 hidden text-blue-500 font-bold">Loading...</div>
+        </div>
+    </div>
+
+    <!-- NEW CUSTOMER MODAL -->
+    <div id="modal-new-customer" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <div class="flex justify-between items-center pb-3">
+                    <p class="text-2xl font-bold">New Customer</p>
+                    <div class="modal-close cursor-pointer z-50 hover:text-red-500" onclick="toggleModal('modal-new-customer')">
+                        <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+                    </div>
+                </div>
+                <div class="my-5">
+                    <p class="mb-4 text-gray-600 text-sm">Customer not found. Please enter details to save.</p>
+                    <label class="block text-xs font-bold mb-1">Phone</label>
+                    <input type="text" id="modal_phone" class="w-full border p-2 mb-2 bg-gray-100 rounded" readonly>
+                    <label class="block text-xs font-bold mb-1">Name</label>
+                    <input type="text" id="modal_name" class="w-full border p-2 mb-2 rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-bold mb-1">Address</label>
+                    <textarea id="modal_address" class="w-full border p-2 mb-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" rows="2"></textarea>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button onclick="toggleModal('modal-new-customer')" class="px-4 py-2 rounded-lg text-gray-500 hover:bg-gray-100 mr-2 font-bold">Cancel</button>
+                    <button onclick="saveCustomerToSheet()" class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700 font-bold">Save Customer</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -251,6 +358,29 @@
             updateDate();
         }
 
+        function formatDateToLong(inputDate) {
+            try {
+                let d;
+                if (typeof inputDate === 'string' && inputDate.includes('/')) {
+                    const parts = inputDate.split(' ')[0].split('/'); 
+                    if (parts.length === 3) {
+                        d = new Date(parts[2], parts[1] - 1, parts[0]);
+                    } else {
+                        return inputDate; 
+                    }
+                } else if (inputDate instanceof Date) {
+                    d = inputDate;
+                } else {
+                    return inputDate;
+                }
+                return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            } catch (e) {
+                console.error("Date error", e);
+                return inputDate;
+            }
+        }
+
+        // --- INVOICE LOGIC ---
         function getNextInvoiceId() {
             let lastInv = localStorage.getItem('last_invoice_number');
             return lastInv ? parseInt(lastInv) + 1 : 1001;
@@ -259,87 +389,261 @@
         function incrementInvoiceId() {
             localStorage.setItem('last_invoice_number', currentInvoiceId);
             currentInvoiceId++;
-            document.getElementById('out_invoice').innerText = currentInvoiceId;
+            document.getElementById('in_invoice_custom').value = ''; 
+            document.getElementById('in_name').value = '';
+            document.getElementById('in_phone').value = '';
+            document.getElementById('in_address').value = '';
+            document.getElementById('in_shipping').value = '0';
+            products = [{ id: Date.now(), name: '', qty: 1, price: 0 }];
+            renderInputRows();
+            updatePreview();
         }
 
         function updateDate() {
             const now = new Date();
-            document.getElementById('out_date_only').innerText = now.toLocaleDateString('en-US'); 
-            document.getElementById('out_time_only').innerText = "Time: " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
-            document.getElementById('out_invoice').innerText = currentInvoiceId;
+            const longDate = formatDateToLong(now);
+            document.getElementById('display_date').value = longDate;
+            
+            const customInv = document.getElementById('in_invoice_custom').value;
+            const invDisplay = customInv ? customInv : currentInvoiceId;
+            document.getElementById('prev_invoice').innerText = invDisplay;
         }
 
+        // --- CUSTOMER SEARCH & SAVE ---
+        function checkCustomer() {
+            const phone = document.getElementById('in_phone').value;
+            if (phone.length < 11) { alert("Please enter valid phone"); return; }
+            
+            const btnIcon = document.getElementById('icon-search');
+            const loader = document.getElementById('icon-loading');
+            btnIcon.classList.add('hidden');
+            loader.classList.remove('hidden');
+            
+            fetch(`${GOOGLE_SCRIPT_URL}?action=getCustomer&phone=${phone}`)
+            .then(res => res.json())
+            .then(data => {
+                btnIcon.classList.remove('hidden');
+                loader.classList.add('hidden');
+                
+                if(data.found) {
+                    document.getElementById('in_name').value = data.name;
+                    document.getElementById('in_address').value = data.address;
+                    updatePreview();
+                } else {
+                    document.getElementById('modal_phone').value = phone;
+                    document.getElementById('modal_name').value = "";
+                    document.getElementById('modal_address').value = "";
+                    toggleModal('modal-new-customer');
+                    setTimeout(() => document.getElementById('modal_name').focus(), 100);
+                }
+            })
+            .catch(err => {
+                btnIcon.classList.remove('hidden');
+                loader.classList.add('hidden');
+                alert("Error connecting to database");
+            });
+        }
+
+        function saveCustomerToSheet() {
+            const phone = document.getElementById('modal_phone').value;
+            const name = document.getElementById('modal_name').value;
+            const address = document.getElementById('modal_address').value;
+
+            if(!name || !address) { alert("Fill all fields"); return; }
+
+            document.getElementById('in_name').value = name;
+            document.getElementById('in_address').value = address;
+            updatePreview();
+            toggleModal('modal-new-customer');
+
+            const url = `${GOOGLE_SCRIPT_URL}?action=saveCustomer&phone=${phone}&name=${encodeURIComponent(name)}&address=${encodeURIComponent(address)}`;
+            fetch(url).then(res => res.json()).then(d => console.log("Saved"));
+        }
+
+        function toggleModal(modalID) {
+            const modal = document.getElementById(modalID);
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+            document.body.classList.toggle('modal-active');
+        }
+
+        // --- PRINT & PROCESS ---
+        function preparePrintData(invoice, dateStr) {
+            document.getElementById('print_invoice').innerText = invoice;
+            document.getElementById('print_date').innerText = dateStr;
+            document.getElementById('print_name').innerText = document.getElementById('in_name').value || 'Walk-in';
+            document.getElementById('print_phone').innerText = document.getElementById('in_phone').value;
+            document.getElementById('print_address').innerText = document.getElementById('in_address').value;
+
+            const tbody = document.getElementById('print-items-body');
+            tbody.innerHTML = '';
+            products.forEach(prod => {
+                if(prod.name || prod.price > 0) {
+                    const amount = prod.qty * prod.price;
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${prod.name}</td>
+                            <td class="text-center">${prod.qty}.00</td>
+                            <td class="text-right">${Number(prod.price).toFixed(2)}</td>
+                            <td class="text-right">${amount.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            const totals = calculateTotals();
+            document.getElementById('print_subtotal').innerText = totals.subtotal.toFixed(2);
+            document.getElementById('print_shipping').innerText = totals.shipping.toFixed(2);
+            document.getElementById('print_grandtotal').innerText = totals.grandTotal.toFixed(2);
+            
+            return totals.grandTotal;
+        }
+
+        async function processAndPrint() {
+            if(!validatePhone()) { alert("Please correct the phone number"); return; }
+            
+            const now = new Date();
+            const dateStrForPrint = formatDateToLong(now);
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute:'2-digit', hour12: true });
+            const dateStrForSheet = now.toLocaleDateString('en-GB') + " " + timeStr;
+
+            const customInv = document.getElementById('in_invoice_custom').value;
+            const finalInvoice = customInv ? customInv : currentInvoiceId;
+
+            const grandTotal = preparePrintData(finalInvoice, dateStrForPrint);
+
+            const billData = {
+                invoice: finalInvoice,
+                date: dateStrForSheet,
+                customer: document.getElementById('in_name').value || 'Walk-in',
+                phone: document.getElementById('in_phone').value,
+                address: document.getElementById('in_address').value,
+                items: JSON.stringify(products),
+                total: grandTotal
+            };
+            
+            fetch(GOOGLE_SCRIPT_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(billData) 
+            }).catch(err => console.error(err));
+
+            window.print();
+            
+            if (!customInv) {
+                incrementInvoiceId(); 
+            } else {
+                document.getElementById('in_invoice_custom').value = ''; 
+                document.getElementById('in_name').value = '';
+                document.getElementById('in_phone').value = '';
+                document.getElementById('in_address').value = '';
+                products = [{ id: Date.now(), name: '', qty: 1, price: 0 }];
+                renderInputRows();
+                updatePreview();
+            }
+        }
+
+        function reprintBill(data) {
+            document.getElementById('print_invoice').innerText = data.invoice;
+            document.getElementById('print_date').innerText = formatDateToLong(data.date);
+            document.getElementById('print_name').innerText = data.customer;
+            document.getElementById('print_phone').innerText = data.phone.replace(/'/g, '');
+            document.getElementById('print_address').innerText = data.address;
+            
+            const tbody = document.getElementById('print-items-body');
+            tbody.innerHTML = '';
+            
+            let itemsToRender = [];
+            if (data.rawItems) { try { itemsToRender = JSON.parse(data.rawItems); } catch(e) {} }
+
+            if (itemsToRender.length > 0) {
+                itemsToRender.forEach(prod => {
+                    if(prod.name) {
+                        const amount = prod.qty * prod.price;
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${prod.name}</td>
+                                <td class="text-center">${prod.qty}.00</td>
+                                <td class="text-right">${Number(prod.price).toFixed(2)}</td>
+                                <td class="text-right">${amount.toFixed(2)}</td>
+                            </tr>
+                        `;
+                    }
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="4">Legacy Data</td></tr>`;
+            }
+
+            document.getElementById('print_subtotal').innerText = "0.00"; 
+            document.getElementById('print_shipping').innerText = "0.00"; 
+            document.getElementById('print_grandtotal').innerText = Number(data.total).toFixed(2);
+
+            document.body.classList.add('printing-history');
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => { document.body.classList.remove('printing-history'); }, 500);
+            }, 100);
+        }
+
+        // --- STANDARD FUNCTIONS ---
         function switchTab(tabName) {
             document.getElementById('view-print').classList.add('hidden');
             document.getElementById('view-history').classList.add('hidden');
-            document.getElementById('tab-print').classList.remove('active');
-            document.getElementById('tab-history').classList.remove('active');
+            // Reset colors
+            document.getElementById('tab-print').classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            document.getElementById('tab-print').classList.add('text-gray-500');
+            
+            document.getElementById('tab-history').classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            document.getElementById('tab-history').classList.add('text-gray-500');
 
             if(tabName === 'print') {
                 document.getElementById('view-print').classList.remove('hidden');
                 document.getElementById('view-print').classList.add('flex');
-                document.getElementById('tab-print').classList.add('active');
+                document.getElementById('tab-print').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                document.getElementById('tab-print').classList.remove('text-gray-500');
                 updatePreview();
-                renderReceiptItems();
             } else {
                 document.getElementById('view-history').classList.remove('hidden');
-                document.getElementById('tab-history').classList.add('active');
+                document.getElementById('tab-history').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+                document.getElementById('tab-history').classList.remove('text-gray-500');
                 fetchHistory(); 
             }
         }
 
         function fetchHistory() {
             const tbody = document.getElementById('history-table-body');
-            const loading = document.getElementById('loading-msg');
-            const empty = document.getElementById('empty-history');
-            
+            document.getElementById('loading-msg').classList.remove('hidden');
             tbody.innerHTML = '';
-            loading.classList.remove('hidden');
-            empty.classList.add('hidden');
 
             fetch(GOOGLE_SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
-                    loading.classList.add('hidden');
+                    document.getElementById('loading-msg').classList.add('hidden');
                     allHistoryData = data; 
                     renderHistoryTable(data);
-                })
-                .catch(err => {
-                    console.error("Error:", err);
-                    loading.innerHTML = "<span class='text-red-500'>Failed to load.</span>";
                 });
         }
 
         function renderHistoryTable(data) {
             const tbody = document.getElementById('history-table-body');
-            const empty = document.getElementById('empty-history');
             tbody.innerHTML = '';
-
-            if(data.length === 0) {
-                empty.classList.remove('hidden');
-                return;
-            }
-            empty.classList.add('hidden');
-
             data.forEach(row => {
                 const tr = document.createElement('tr');
-                tr.className = "bg-white border-b hover:bg-gray-50 align-top"; 
+                tr.className = "bg-white border-b hover:bg-gray-50 align-top transition hover:bg-blue-50"; 
                 const rowDataStr = JSON.stringify(row).replace(/"/g, '&quot;');
-                
-                let tQty = row.totalQty;
-                if(tQty === undefined) { tQty = 0; }
+                const displayDate = formatDateToLong(row.date);
 
                 tr.innerHTML = `
-                    <td class="px-2 py-2 whitespace-nowrap">${row.date.split(' ')[0]}</td>
-                    <td class="px-2 py-2 font-mono text-xs font-bold">${row.invoice}</td>
-                    <td class="px-2 py-2 font-bold">${row.customer}</td>
-                    <td class="px-2 py-2">${row.phone.replace(/'/g, '')}</td>
-                    <td class="px-2 py-2 text-xs">${row.address}</td>
-                    <td class="px-2 py-2 text-xs">${row.items}</td>
-                    <td class="px-2 py-2 text-center font-bold text-blue-600">${tQty}</td>
-                    <td class="px-2 py-2 text-right font-bold">${row.total}</td>
+                    <td class="px-2 py-2 whitespace-nowrap text-gray-700">${displayDate}</td>
+                    <td class="px-2 py-2 font-mono text-xs font-bold text-gray-600">${row.invoice}</td>
+                    <td class="px-2 py-2 font-bold text-gray-800">${row.customer}</td>
+                    <td class="px-2 py-2 text-gray-600">${row.phone.replace(/'/g, '')}</td>
+                    <td class="px-2 py-2 text-xs min-w-[200px] whitespace-normal text-gray-500">${row.address}</td>
+                    <td class="px-2 py-2 text-xs text-gray-500">${row.items}</td>
+                    <td class="px-2 py-2 text-right font-bold text-gray-800">${row.total}</td>
                     <td class="px-2 py-2 text-center">
-                        <button onclick="reprintBill(${rowDataStr})" class="bg-blue-100 text-blue-600 p-1 rounded hover:bg-blue-200 text-xs font-bold">Print</button>
+                        <button onclick="reprintBill(${rowDataStr})" class="bg-blue-100 text-blue-600 p-1 px-2 rounded hover:bg-blue-200 text-xs font-bold">Print</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -349,97 +653,23 @@
         function filterHistory() {
             const query = document.getElementById('search-history').value.toLowerCase();
             const filteredData = allHistoryData.filter(item => {
-                return (
-                    item.invoice.toString().toLowerCase().includes(query) ||
-                    item.customer.toLowerCase().includes(query) ||
-                    item.phone.toString().includes(query)
-                );
+                return (item.invoice.toString().toLowerCase().includes(query) || item.customer.toLowerCase().includes(query) || item.phone.toString().includes(query));
             });
             renderHistoryTable(filteredData);
         }
 
-        function reprintBill(data) {
-            document.getElementById('out_invoice').innerText = data.invoice;
-            document.getElementById('out_date_only').innerText = data.date; 
-            document.getElementById('out_time_only').innerText = ""; 
-
-            document.getElementById('out_name').innerText = data.customer;
-            document.getElementById('out_phone').innerText = data.phone.replace(/'/g, '');
-            document.getElementById('out_address').innerText = data.address;
-            
-            const tbody = document.getElementById('receipt-items');
-            tbody.innerHTML = '';
-            
-            let itemsToRender = [];
-            if (data.rawItems) {
-                try {
-                    itemsToRender = JSON.parse(data.rawItems);
-                } catch(e) {}
-            }
-
-            if (itemsToRender.length > 0) {
-                itemsToRender.forEach(prod => {
-                    if(prod.name) {
-                        const amount = prod.qty * prod.price;
-                        const tr = document.createElement('tr');
-                        tr.className = "item-row";
-                        tr.innerHTML = `
-                            <td class="text-left">${prod.name}</td>
-                            <td class="text-center">${prod.qty}.00</td>
-                            <td class="text-right">${Number(prod.price).toFixed(2)}</td>
-                            <td class="text-right">${amount.toFixed(2)}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    }
-                });
-            } else {
-                const itemsArr = data.items.split(', ');
-                itemsArr.forEach(itemStr => {
-                    const parts = itemStr.split(' (');
-                    if(parts.length > 1) {
-                         const name = parts[0];
-                         const qty = parts[1].replace(')', '');
-                         const tr = document.createElement('tr');
-                         tr.className = "item-row";
-                         tr.innerHTML = `
-                            <td class="text-left">${name}</td>
-                            <td class="text-center">${qty}.00</td>
-                            <td class="text-right">-</td>
-                            <td class="text-right">-</td>
-                        `;
-                        tbody.appendChild(tr);
-                    }
-                });
-            }
-
-            // --- আপনার অনুরোধ অনুযায়ী সংশোধিত অংশ ---
-            document.getElementById('out_subtotal').innerText = "0.00"; 
-            document.getElementById('out_shipping').innerText = "0.00"; 
-            document.getElementById('out_grandtotal').innerText = Number(data.total).toFixed(2);
-            // --- সংশোধিত অংশ শেষ ---
-
-            document.body.classList.add('printing-history');
-            setTimeout(() => {
-                window.print();
-                setTimeout(() => {
-                    document.body.classList.remove('printing-history');
-                }, 500);
-            }, 100);
-        }
-
         function validatePhone() {
             const phoneInput = document.getElementById('in_phone');
-            const errorMsg = document.getElementById('phone-error');
             const btn = document.getElementById('btn-print');
             const val = phoneInput.value.toString();
             if (val.length !== 11 && val.length > 0) {
-                errorMsg.classList.remove('hidden');
+                document.getElementById('phone-error').classList.remove('hidden');
                 phoneInput.classList.add('border-red-500');
                 btn.disabled = true;
                 btn.classList.add('opacity-50', 'cursor-not-allowed');
                 return false;
             } else {
-                errorMsg.classList.add('hidden');
+                document.getElementById('phone-error').classList.add('hidden');
                 phoneInput.classList.remove('border-red-500');
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -454,55 +684,25 @@
             products.forEach((prod, index) => {
                 const row = document.createElement('div');
                 row.className = "flex gap-2 items-end bg-gray-50 p-2 rounded border border-gray-200";
-                row.innerHTML = `<div class="flex-grow"><input type="text" class="w-full p-1 bg-transparent border-b border-gray-300 text-sm outline-none" placeholder="Product Name" value="${prod.name}" oninput="updateProduct(${index}, 'name', this.value)"></div><div class="w-16"><input type="number" class="w-full p-1 bg-transparent border-b border-gray-300 text-sm text-center outline-none" value="${prod.qty}" min="1" oninput="updateProduct(${index}, 'qty', this.value)"></div><div class="w-20"><input type="number" class="w-full p-1 bg-transparent border-b border-gray-300 text-sm text-right outline-none" placeholder="Price" value="${prod.price}" oninput="updateProduct(${index}, 'price', this.value)"></div><button onclick="removeRow(${index})" class="text-red-400 hover:text-red-600 font-bold px-1">×</button>`;
+                row.innerHTML = `<div class="flex-grow"><input type="text" class="w-full p-1 bg-transparent border-b border-gray-300 text-sm outline-none focus:border-blue-500" placeholder="Product Name" value="${prod.name}" oninput="updateProduct(${index}, 'name', this.value)"></div><div class="w-16"><input type="number" class="w-full p-1 bg-transparent border-b border-gray-300 text-sm text-center outline-none focus:border-blue-500" value="${prod.qty}" min="1" oninput="updateProduct(${index}, 'qty', this.value)"></div><div class="w-20"><input type="number" class="w-full p-1 bg-transparent border-b border-gray-300 text-sm text-right outline-none focus:border-blue-500" placeholder="Price" value="${prod.price}" oninput="updateProduct(${index}, 'price', this.value)"></div><button onclick="removeRow(${index})" class="text-red-400 hover:text-red-600 font-bold px-1 transition transform hover:scale-110">×</button>`;
                 container.appendChild(row);
             });
             calculateTotals();
         }
-        function updateProduct(index, field, value) { products[index][field] = field === 'name' ? value : Number(value); renderReceiptItems(); calculateTotals(); }
-        function renderReceiptItems() {
-            const tbody = document.getElementById('receipt-items');
-            tbody.innerHTML = '';
-            products.forEach(prod => {
-                if(prod.name || prod.price > 0) { 
-                    const amount = prod.qty * prod.price;
-                    const tr = document.createElement('tr');
-                    tr.className = "item-row";
-                    tr.innerHTML = `<td class="text-left">${prod.name}</td><td class="text-center">${prod.qty}.00</td><td class="text-right">${Number(prod.price).toFixed(2)}</td><td class="text-right">${amount.toFixed(2)}</td>`;
-                    tbody.appendChild(tr);
-                }
-            });
-        }
+        function updateProduct(index, field, value) { products[index][field] = field === 'name' ? value : Number(value); calculateTotals(); }
         function calculateTotals() {
             let subtotal = 0; products.forEach(p => { subtotal += (p.qty * p.price); });
             const shipping = Number(document.getElementById('in_shipping').value) || 0;
             const grandTotal = subtotal + shipping;
-            document.getElementById('out_subtotal').innerText = subtotal.toFixed(2);
-            document.getElementById('out_shipping').innerText = shipping.toFixed(2);
-            document.getElementById('out_grandtotal').innerText = grandTotal.toFixed(2);
             document.getElementById('screen-total').innerText = grandTotal;
+            document.getElementById('prev_total').innerText = grandTotal;
             return { subtotal, shipping, grandTotal };
         }
-        async function processAndPrint() {
-            if(!validatePhone()) { alert("Please correct the phone number"); return; }
-            const totals = calculateTotals();
-            const billData = {
-                invoice: currentInvoiceId,
-                date: new Date().toLocaleDateString('en-GB') + " " + new Date().toLocaleTimeString(),
-                customer: document.getElementById('in_name').value || 'Walk-in',
-                phone: document.getElementById('in_phone').value,
-                address: document.getElementById('in_address').value,
-                items: JSON.stringify(products),
-                total: totals.grandTotal
-            };
-            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(billData) }).catch(err => console.error(err));
-            window.print();
-            incrementInvoiceId();
-        }
         function updatePreview() {
-            document.getElementById('out_name').innerText = document.getElementById('in_name').value || "Walk-in";
-            document.getElementById('out_phone').innerText = document.getElementById('in_phone').value;
-            document.getElementById('out_address').innerText = document.getElementById('in_address').value || "Dhaka";
+            document.getElementById('prev_name').innerText = document.getElementById('in_name').value || '...';
+            const customInv = document.getElementById('in_invoice_custom').value;
+            const invDisplay = customInv ? customInv : currentInvoiceId;
+            document.getElementById('prev_invoice').innerText = invDisplay;
         }
     </script>
 </body>
