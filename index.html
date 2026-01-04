@@ -126,24 +126,19 @@
 </head>
 <body class="p-4">
 
-    <!-- TAB NAVIGATION -->
     <div class="w-full px-4 mb-4 bg-white rounded-lg shadow p-2 flex no-print">
         <div id="tab-print" class="tab-btn active text-blue-600 border-b-2 border-blue-600 font-bold px-4 py-2" onclick="switchTab('print')">Print Bill</div>
         <div id="tab-history" class="tab-btn text-gray-500 px-4 py-2 font-bold cursor-pointer hover:text-blue-500" onclick="switchTab('history')">History</div>
     </div>
 
-    <!-- MAIN INTERFACE -->
     <div id="view-print" class="w-full px-4 flex flex-col md:flex-row gap-8">
-        <!-- Input Form -->
         <div class="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-md no-print">
             <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">New Bill</h2>
             
             <div class="space-y-3 mb-6">
-                <!-- Invoice & Date -->
                 <div class="flex gap-2">
                     <div class="w-1/2">
                         <label class="block text-xs font-bold uppercase text-gray-600">Invoice No (Optional)</label>
-                        <!-- Set as Text to preserve leading zeros -->
                         <input type="text" id="in_invoice_custom" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-yellow-50" placeholder="Auto" oninput="updatePreview()">
                     </div>
                     <div class="w-1/2">
@@ -152,7 +147,6 @@
                     </div>
                 </div>
 
-                <!-- Phone Search -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Phone Number</label>
                     <div class="flex gap-2">
@@ -177,7 +171,6 @@
                 </div>
             </div>
 
-            <!-- Product Inputs -->
             <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="font-bold text-gray-700">Products</h3>
@@ -186,7 +179,6 @@
                 <div id="product-inputs" class="space-y-2"></div>
             </div>
 
-            <!-- Totals -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Shipping (Tk)</label>
@@ -206,7 +198,6 @@
             </button>
         </div>
 
-        <!-- Receipt Preview (SCREEN ONLY) -->
         <div class="w-full md:w-1/2 flex justify-center items-start bg-gray-300 p-4 rounded-lg min-h-[500px] no-print">
             <div class="receipt-card">
                 <div class="text-center font-bold text-lg mb-2 text-gray-700">PREVIEW</div>
@@ -223,7 +214,6 @@
         </div>
     </div>
 
-    <!-- PRINT LAYOUT (Optimized for POS & A4) -->
     <div id="print-only-area">
         <div class="print-header">
             <div class="print-shop-name">PFF PREMIUM (ZS TRADING)</div>
@@ -231,7 +221,6 @@
             <div class="print-contact">Mobile: 01772396719</div>
         </div>
 
-        <!-- Layout using TABLE to fix alignment issues -->
         <table class="info-table">
             <tr>
                 <td class="info-label-col">Date:</td>
@@ -288,7 +277,6 @@
         </div>
     </div>
 
-    <!-- HISTORY VIEW -->
     <div id="view-history" class="w-full px-4 bg-white p-6 rounded-lg shadow-md hidden">
         <div class="flex flex-col md:flex-row justify-between items-center mb-4 border-b pb-2 gap-4">
             <h2 class="text-xl font-bold text-gray-800">Sales History</h2>
@@ -316,7 +304,6 @@
         </div>
     </div>
 
-    <!-- NEW CUSTOMER MODAL -->
     <div id="modal-new-customer" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
         <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
         <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
@@ -361,12 +348,19 @@
         function formatDateToLong(inputDate) {
             try {
                 let d;
-                if (typeof inputDate === 'string' && inputDate.includes('/')) {
-                    const parts = inputDate.split(' ')[0].split('/'); 
-                    if (parts.length === 3) {
-                        d = new Date(parts[2], parts[1] - 1, parts[0]);
+                // Handle different incoming formats
+                if (typeof inputDate === 'string') {
+                    if (inputDate.includes('/')) {
+                        const parts = inputDate.split(' ')[0].split('/'); 
+                        if (parts.length === 3) {
+                            d = new Date(parts[2], parts[1] - 1, parts[0]);
+                        } else {
+                            return inputDate; 
+                        }
                     } else {
-                        return inputDate; 
+                        // Attempt to parse ISO string
+                        d = new Date(inputDate);
+                        if (isNaN(d.getTime())) return inputDate;
                     }
                 } else if (inputDate instanceof Date) {
                     d = inputDate;
@@ -504,8 +498,13 @@
             
             const now = new Date();
             const dateStrForPrint = formatDateToLong(now);
-            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute:'2-digit', hour12: true });
-            const dateStrForSheet = now.toLocaleDateString('en-GB') + " " + timeStr;
+            
+            // MANUAL DATE FORMATTING FOR SHEET (dd/MM/yyyy)
+            // This ensures 4th Jan is always 04/01/2026 regardless of browser locale
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            const dateStrForSheet = `${day}/${month}/${year}`;
 
             const customInv = document.getElementById('in_invoice_custom').value;
             const finalInvoice = customInv ? customInv : currentInvoiceId;
@@ -514,7 +513,7 @@
 
             const billData = {
                 invoice: finalInvoice,
-                date: dateStrForSheet,
+                date: dateStrForSheet, // Sending strict dd/MM/yyyy string
                 customer: document.getElementById('in_name').value || 'Walk-in',
                 phone: document.getElementById('in_phone').value,
                 address: document.getElementById('in_address').value,
@@ -546,7 +545,9 @@
 
         function reprintBill(data) {
             document.getElementById('print_invoice').innerText = data.invoice;
-            document.getElementById('print_date').innerText = formatDateToLong(data.date);
+            // Clean up the date string (remove leading ' if exists)
+            const cleanDate = String(data.date).replace(/'/g, '');
+            document.getElementById('print_date').innerText = formatDateToLong(cleanDate);
             document.getElementById('print_name').innerText = data.customer;
             document.getElementById('print_phone').innerText = data.phone.replace(/'/g, '');
             document.getElementById('print_address').innerText = data.address;
@@ -632,7 +633,10 @@
                 const tr = document.createElement('tr');
                 tr.className = "bg-white border-b hover:bg-gray-50 align-top transition hover:bg-blue-50"; 
                 const rowDataStr = JSON.stringify(row).replace(/"/g, '&quot;');
-                const displayDate = formatDateToLong(row.date);
+                
+                // Clean date for display
+                const cleanDate = String(row.date).replace(/'/g, '');
+                const displayDate = formatDateToLong(cleanDate);
 
                 tr.innerHTML = `
                     <td class="px-2 py-2 whitespace-nowrap text-gray-700">${displayDate}</td>
