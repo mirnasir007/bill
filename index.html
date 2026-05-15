@@ -151,7 +151,7 @@
                     <label class="block text-xs font-bold uppercase text-gray-600">Phone Number</label>
                     <div class="flex gap-2">
                         <input type="number" id="in_phone" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="017xxxxxxxx" 
-                               oninput="validatePhone()" onkeydown="if(event.key === 'Enter') checkCustomer()">
+                               oninput="validatePhone(); checkFormValidity()" onkeydown="if(event.key === 'Enter') checkCustomer()">
                         <button id="btn-search" onclick="checkCustomer()" class="bg-blue-600 text-white px-4 rounded hover:bg-blue-700 font-bold min-w-[50px] flex justify-center items-center">
                             <svg id="icon-search" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             <div id="icon-loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin hidden"></div>
@@ -162,12 +162,12 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Customer Name</label>
-                    <input type="text" id="in_name" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter Name" oninput="updatePreview()">
+                    <input type="text" id="in_name" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter Name" oninput="updatePreview(); checkFormValidity()">
                 </div>
                 
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600">Address</label>
-                    <textarea id="in_address" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="Enter Address" oninput="updatePreview()"></textarea>
+                    <textarea id="in_address" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none" rows="2" placeholder="Enter Address" oninput="updatePreview(); checkFormValidity()"></textarea>
                 </div>
             </div>
 
@@ -192,7 +192,7 @@
                 </div>
             </div>
 
-            <button id="btn-print" onclick="processAndPrint()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-4 rounded-lg shadow-lg flex justify-center items-center gap-2 text-lg transition transform hover:scale-[1.02]">
+            <button id="btn-print" onclick="processAndPrint()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-4 rounded-lg shadow-lg flex justify-center items-center gap-2 text-lg transition transform hover:scale-[1.02] opacity-50 cursor-not-allowed grayscale" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                 PRINT & SAVE
             </button>
@@ -279,7 +279,14 @@
 
     <div id="view-history" class="w-full px-4 bg-white p-6 rounded-lg shadow-md hidden">
         <div class="flex flex-col md:flex-row justify-between items-center mb-4 border-b pb-2 gap-4">
-            <h2 class="text-xl font-bold text-gray-800">Sales History</h2>
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-bold text-gray-800">Sales History</h2>
+                <button id="btn-send-main" onclick="prepareSendData()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded shadow text-sm font-bold flex items-center gap-2 transition-all">
+                    <svg id="icon-send-main" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                    <div id="spinner-send-main" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin hidden"></div>
+                    <span>Send Data</span>
+                </button>
+            </div>
             <div class="relative w-full md:w-1/3">
                 <input type="text" id="search-history" onkeyup="filterHistory()" class="block w-full p-2 text-sm border rounded focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Search Invoice, Name or Phone...">
             </div>
@@ -288,6 +295,7 @@
             <table class="w-full text-sm text-left text-gray-500">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-100">
                     <tr>
+                        <th class="px-2 py-3 text-center"><input type="checkbox" id="selectAllHistory" onclick="toggleAllHistory(this)"></th>
                         <th class="px-2 py-3">Date</th>
                         <th class="px-2 py-3">Invoice</th>
                         <th class="px-2 py-3">Customer</th>
@@ -301,6 +309,9 @@
                 <tbody id="history-table-body"></tbody>
             </table>
             <div id="loading-msg" class="text-center py-8 hidden text-blue-500 font-bold">Loading...</div>
+            <div class="flex justify-center mt-4 mb-4">
+                <button id="btn-load-more" onclick="loadMoreHistory()" class="hidden bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-2 px-6 rounded-lg transition-all shadow">Load More Data</button>
+            </div>
         </div>
     </div>
 
@@ -331,6 +342,68 @@
         </div>
     </div>
 
+    <div id="modal-delete" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <div class="flex justify-between items-center pb-3">
+                    <p class="text-2xl font-bold text-red-600">Delete Invoice</p>
+                    <div class="modal-close cursor-pointer z-50 hover:text-red-500" onclick="toggleModal('modal-delete')">
+                        <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+                    </div>
+                </div>
+                <div class="my-5">
+                    <p id="delete-modal-msg" class="text-gray-600 text-sm font-bold">Are you sure you want to delete this invoice?</p>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button onclick="toggleModal('modal-delete')" class="px-4 py-2 rounded-lg text-gray-500 hover:bg-gray-100 mr-2 font-bold">Cancel</button>
+                    <button id="btn-confirm-delete" class="px-4 py-2 bg-red-600 rounded-lg text-white hover:bg-red-700 font-bold">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-send-confirm" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <div class="flex justify-between items-center pb-3">
+                    <p class="text-2xl font-bold text-green-600">Send Data</p>
+                    <div class="modal-close cursor-pointer z-50 hover:text-red-500" onclick="toggleModal('modal-send-confirm')">
+                        <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+                    </div>
+                </div>
+                <div class="my-5">
+                    <p id="send-confirm-msg" class="text-gray-600 text-sm font-bold">Are you sure you want to send records to Main Data?</p>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button onclick="toggleModal('modal-send-confirm')" class="px-4 py-2 rounded-lg text-gray-500 hover:bg-gray-100 mr-2 font-bold">Cancel</button>
+                    <button id="btn-confirm-send" class="px-4 py-2 bg-green-600 rounded-lg text-white hover:bg-green-700 font-bold">Send Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-alert" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 transition-opacity duration-300">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <div class="flex justify-between items-center pb-3">
+                    <p id="alert-modal-title" class="text-2xl font-bold text-blue-600">Notification</p>
+                    <div class="modal-close cursor-pointer z-50 hover:text-red-500" onclick="toggleModal('modal-alert')">
+                        <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path></svg>
+                    </div>
+                </div>
+                <div class="my-5">
+                    <p id="alert-modal-msg" class="text-gray-600 text-sm font-bold"></p>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button onclick="toggleModal('modal-alert')" class="px-4 py-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700 font-bold">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- CONFIGURATION ---
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb7-0ACz3al6HlXpqrUz8JkfN5F5SuRQTZBUDz16HeXFpevV809fyhjMYdD_-dufWjLw/exec"; 
@@ -339,10 +412,13 @@
         let products = [{ id: 1, name: '', qty: 1, price: 0 }];
         let currentInvoiceId = getNextInvoiceId();
         let allHistoryData = []; 
+        let historyOffset = 0;
+        const HISTORY_LIMIT = 50; 
 
         window.onload = function() {
             renderInputRows();
             updateDate();
+            checkFormValidity();
         }
 
         function formatDateToLong(inputDate) {
@@ -423,6 +499,7 @@
                     document.getElementById('in_name').value = data.name;
                     document.getElementById('in_address').value = data.address;
                     updatePreview();
+                    checkFormValidity();
                 } else {
                     document.getElementById('modal_phone').value = phone;
                     document.getElementById('modal_name').value = "";
@@ -511,7 +588,9 @@
 
             const grandTotal = preparePrintData(finalInvoice, dateStrForPrint);
 
+            const isUpdate = typeof isEditingMode !== 'undefined' && isEditingMode;
             const billData = {
+                action: isUpdate ? 'update' : 'save',
                 invoice: finalInvoice,
                 date: dateStrForSheet, // Sending strict dd/MM/yyyy string
                 customer: document.getElementById('in_name').value || 'Walk-in',
@@ -526,11 +605,25 @@
                 mode: 'no-cors', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify(billData) 
+            }).then(() => {
+                if (isUpdate) {
+                    showAlert("Update Successful", "Invoice " + finalInvoice + " has been successfully updated.");
+                }
             }).catch(err => console.error(err));
 
             window.print();
             
-            if (!customInv) {
+            if (isUpdate) {
+                isEditingMode = false;
+                document.querySelector('#view-print h2').innerText = "New Bill";
+                document.getElementById('in_invoice_custom').disabled = false;
+                const btn = document.getElementById('btn-print');
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg> PRINT & SAVE`;
+                btn.classList.replace('bg-yellow-600', 'bg-black');
+                btn.classList.replace('hover:bg-yellow-700', 'hover:bg-gray-800');
+            }
+
+            if (!customInv && (!typeof isEditingMode || !isEditingMode)) {
                 incrementInvoiceId(); 
             } else {
                 document.getElementById('in_invoice_custom').value = ''; 
@@ -540,6 +633,7 @@
                 products = [{ id: Date.now(), name: '', qty: 1, price: 0 }];
                 renderInputRows();
                 updatePreview();
+                checkFormValidity();
             }
         }
 
@@ -608,22 +702,35 @@
                 document.getElementById('view-history').classList.remove('hidden');
                 document.getElementById('tab-history').classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
                 document.getElementById('tab-history').classList.remove('text-gray-500');
+                
+                historyOffset = 0;
+                allHistoryData = [];
+                document.getElementById('history-table-body').innerHTML = '';
+                document.getElementById('btn-load-more').classList.add('hidden');
                 fetchHistory(); 
             }
         }
 
         function fetchHistory() {
-            const tbody = document.getElementById('history-table-body');
             document.getElementById('loading-msg').classList.remove('hidden');
-            tbody.innerHTML = '';
+            document.getElementById('btn-load-more').classList.add('hidden');
 
-            fetch(GOOGLE_SCRIPT_URL)
+            fetch(`${GOOGLE_SCRIPT_URL}?action=getHistory&offset=${historyOffset}&limit=${HISTORY_LIMIT}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('loading-msg').classList.add('hidden');
-                    allHistoryData = data; 
-                    renderHistoryTable(data);
+                    allHistoryData = allHistoryData.concat(data); 
+                    renderHistoryTable(allHistoryData);
+                    
+                    if (data.length === HISTORY_LIMIT) {
+                        document.getElementById('btn-load-more').classList.remove('hidden');
+                    }
                 });
+        }
+
+        function loadMoreHistory() {
+            historyOffset += HISTORY_LIMIT;
+            fetchHistory();
         }
 
         function renderHistoryTable(data) {
@@ -639,6 +746,7 @@
                 const displayDate = formatDateToLong(cleanDate);
 
                 tr.innerHTML = `
+                    <td class="px-2 py-2 text-center align-middle"><input type="checkbox" class="history-checkbox" value="${row.invoice}"></td>
                     <td class="px-2 py-2 whitespace-nowrap text-gray-700">${displayDate}</td>
                     <td class="px-2 py-2 font-mono text-xs font-bold text-gray-600">${row.invoice}</td>
                     <td class="px-2 py-2 font-bold text-gray-800">${row.customer}</td>
@@ -647,7 +755,11 @@
                     <td class="px-2 py-2 text-xs text-gray-500">${row.items}</td>
                     <td class="px-2 py-2 text-right font-bold text-gray-800">${row.total}</td>
                     <td class="px-2 py-2 text-center">
-                        <button onclick="reprintBill(${rowDataStr})" class="bg-blue-100 text-blue-600 p-1 px-2 rounded hover:bg-blue-200 text-xs font-bold">Print</button>
+                        <div class="flex justify-center items-center gap-1">
+                            <button onclick="reprintBill(${rowDataStr})" class="bg-blue-100 text-blue-600 px-2 py-1 rounded shadow-sm hover:bg-blue-200 hover:shadow text-xs font-bold transition-all">Print</button>
+                            <button onclick="editHistoryBill(${rowDataStr})" class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded shadow-sm hover:bg-yellow-200 hover:shadow text-xs font-bold transition-all">Edit</button>
+                            <button onclick="deleteBill('${row.invoice}')" class="bg-red-100 text-red-600 px-2 py-1 rounded shadow-sm hover:bg-red-200 hover:shadow text-xs font-bold transition-all">Delete</button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -664,24 +776,214 @@
 
         function validatePhone() {
             const phoneInput = document.getElementById('in_phone');
-            const btn = document.getElementById('btn-print');
             const val = phoneInput.value.toString();
             if (val.length !== 11 && val.length > 0) {
                 document.getElementById('phone-error').classList.remove('hidden');
                 phoneInput.classList.add('border-red-500');
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
                 return false;
             } else {
                 document.getElementById('phone-error').classList.add('hidden');
                 phoneInput.classList.remove('border-red-500');
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
                 return true;
             }
         }
-        function addProductRow() { products.push({ id: Date.now(), name: '', qty: 1, price: 0 }); renderInputRows(); }
-        function removeRow(index) { products.splice(index, 1); renderInputRows(); }
+
+        function checkFormValidity() {
+            const name = document.getElementById('in_name').value.trim();
+            const address = document.getElementById('in_address').value.trim();
+            const phone = document.getElementById('in_phone').value.trim();
+            
+            let hasValidProduct = false;
+            for (let p of products) {
+                if (p.name.trim() !== '' && p.qty > 0) {
+                    hasValidProduct = true;
+                    break;
+                }
+            }
+
+            const btn = document.getElementById('btn-print');
+            if (name !== '' && address !== '' && phone.length === 11 && hasValidProduct) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+            }
+        }
+
+        let isEditingMode = false;
+
+        function editHistoryBill(data) {
+            isEditingMode = true;
+            document.getElementById('in_invoice_custom').value = data.invoice;
+            document.getElementById('in_invoice_custom').disabled = true; 
+            document.getElementById('in_name').value = data.customer;
+            document.getElementById('in_phone').value = data.phone.replace(/'/g, '');
+            document.getElementById('in_address').value = data.address;
+            
+            try { 
+                if (data.rawItems) {
+                    products = JSON.parse(data.rawItems); 
+                } else {
+                    products = [{ id: Date.now(), name: '', qty: 1, price: 0 }];
+                }
+            } catch(e) { 
+                products = [{ id: Date.now(), name: '', qty: 1, price: 0 }];
+            }
+            
+            renderInputRows();
+            switchTab('print');
+            
+            document.querySelector('#view-print h2').innerText = "Edit Bill : " + data.invoice;
+            const btn = document.getElementById('btn-print');
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg> UPDATE & PRINT`;
+            btn.classList.replace('bg-black', 'bg-yellow-600');
+            btn.classList.replace('hover:bg-gray-800', 'hover:bg-yellow-700');
+            
+            checkFormValidity();
+            window.scrollTo(0, 0);
+        }
+
+        let invoiceToDelete = null;
+
+        function deleteBill(invoice) {
+            invoiceToDelete = invoice;
+            document.getElementById('delete-modal-msg').innerText = "Are you sure you want to delete Invoice No: " + invoice + "?";
+            document.getElementById('btn-confirm-delete').onclick = confirmDeleteBill;
+            toggleModal('modal-delete');
+        }
+
+        function confirmDeleteBill() {
+            toggleModal('modal-delete');
+            if (invoiceToDelete) {
+                document.getElementById('loading-msg').innerText = "Deleting...";
+                document.getElementById('loading-msg').classList.remove('hidden');
+                
+                fetch(`${GOOGLE_SCRIPT_URL}?action=delete&invoice=${invoiceToDelete}`)
+                    .then(res => res.text())
+                    .then(data => {
+                        document.getElementById('loading-msg').innerText = "Loading...";
+                        showAlert("Deleted", "Invoice " + invoiceToDelete + " has been successfully deleted.");
+                        historyOffset = 0;
+                        allHistoryData = [];
+                        document.getElementById('history-table-body').innerHTML = '';
+                        fetchHistory();
+                    })
+                    .catch(err => {
+                        showAlert("Error", "Failed to delete. Please try again.");
+                        historyOffset = 0;
+                        allHistoryData = [];
+                        document.getElementById('history-table-body').innerHTML = '';
+                        fetchHistory();
+                    });
+            }
+        }
+
+        function showAlert(title, msg) {
+            document.getElementById('alert-modal-title').innerText = title;
+            document.getElementById('alert-modal-msg').innerText = msg;
+            toggleModal('modal-alert');
+        }
+
+        // --- NEW FEATURES FOR SENDING DATA ---
+        function toggleAllHistory(source) {
+            const checkboxes = document.querySelectorAll('.history-checkbox');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+        }
+
+        let currentRecordsToSend = [];
+
+        function prepareSendData() {
+            const checkboxes = document.querySelectorAll('.history-checkbox:checked');
+            currentRecordsToSend = [];
+
+            if (checkboxes.length > 0) {
+                checkboxes.forEach(cb => {
+                    const invoice = cb.value;
+                    const rowData = allHistoryData.find(r => r.invoice == invoice);
+                    if (rowData) currentRecordsToSend.push(rowData);
+                });
+            } else {
+                const now = new Date();
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+                const todayStr = `${day}/${month}/${year}`;
+
+                currentRecordsToSend = allHistoryData.filter(r => String(r.date).replace(/'/g, '').trim() === todayStr);
+            }
+
+            if (currentRecordsToSend.length === 0) {
+                showAlert("No Data", "No data selected and no data found for today's date.");
+                return;
+            }
+
+            // Show Custom Confirmation Modal
+            document.getElementById('send-confirm-msg').innerText = `Are you sure you want to send ${currentRecordsToSend.length} records to Main Data?`;
+            document.getElementById('btn-confirm-send').onclick = executeSendData;
+            toggleModal('modal-send-confirm');
+        }
+
+        function executeSendData() {
+            toggleModal('modal-send-confirm'); // Close Modal
+            
+            const btn = document.getElementById('btn-send-main');
+            const icon = document.getElementById('icon-send-main');
+            const spinner = document.getElementById('spinner-send-main');
+            
+            // Show Button Loading State
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            const payload = {
+                action: "sendToMainData",
+                records: currentRecordsToSend
+            };
+
+            // use text/plain to avoid CORS preflight, allowing us to read the JSON response back
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Restore Button State
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                icon.classList.remove('hidden');
+                spinner.classList.add('hidden');
+
+                if (data.result === 'success') {
+                    let msg = `${data.added} records sent successfully.`;
+                    if (data.skipped > 0) {
+                        msg += `\n( ${data.skipped} duplicate records were skipped. )`;
+                    }
+                    showAlert("Result", msg);
+                } else {
+                    showAlert("Error", "Failed: " + (data.error || "Unknown error"));
+                }
+                
+                // Uncheck all checkboxes
+                document.querySelectorAll('.history-checkbox').forEach(cb => cb.checked = false);
+                if(document.getElementById('selectAllHistory')) document.getElementById('selectAllHistory').checked = false;
+            }).catch(err => {
+                // Restore Button State on Error
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                icon.classList.remove('hidden');
+                spinner.classList.add('hidden');
+                
+                showAlert("Error", "Failed to send data. Check internet connection.");
+                console.error(err);
+            });
+        }
+        // --- END NEW FEATURES ---
+
+        function addProductRow() { products.push({ id: Date.now(), name: '', qty: 1, price: 0 }); renderInputRows(); checkFormValidity(); }
+        function removeRow(index) { products.splice(index, 1); renderInputRows(); checkFormValidity(); }
         function renderInputRows() {
             const container = document.getElementById('product-inputs');
             container.innerHTML = '';
@@ -693,7 +995,7 @@
             });
             calculateTotals();
         }
-        function updateProduct(index, field, value) { products[index][field] = field === 'name' ? value : Number(value); calculateTotals(); }
+        function updateProduct(index, field, value) { products[index][field] = field === 'name' ? value : Number(value); calculateTotals(); checkFormValidity(); }
         function calculateTotals() {
             let subtotal = 0; products.forEach(p => { subtotal += (p.qty * p.price); });
             const shipping = Number(document.getElementById('in_shipping').value) || 0;
